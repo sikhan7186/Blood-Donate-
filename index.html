@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>রক্তসেতু | জরুরি রক্তদাতা খুঁজুন</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --crimson:#C81E3A;
+    --maroon:#5C0F1E;
+    --ivory:#FFF8F3;
+    --ink:#241B1B;
+    --sage:#3F7D5C;
+    --muted:#8A7A73;
+    --line:#EFE2DA;
+    --card:#FFFFFF;
+    --gold:#B8863E;
+    --radius:16px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ivory);
+    color:var(--ink);
+    font-family:'Hind Siliguri', sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  .display{font-family:'Tiro Bangla', serif;}
+
+  /* ---------- App shell ---------- */
+  #app{max-width:480px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; position:relative;}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    background:var(--maroon); color:#fff;
+    padding:14px 18px; display:flex; align-items:center; justify-content:space-between;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{width:26px;height:26px;flex-shrink:0;}
+  .brand-name{font-family:'Tiro Bangla', serif; font-size:20px; letter-spacing:.3px;}
+  .icon-btn{
+    background:rgba(255,255,255,.12); border:none; color:#fff; width:36px; height:36px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer;
+  }
+
+  /* ---------- Hero / signature pulse ---------- */
+  .hero{
+    background:linear-gradient(180deg, var(--maroon) 0%, var(--crimson) 130%);
+    color:#fff; padding:22px 20px 34px; position:relative; overflow:hidden;
+  }
+  .hero h1{font-family:'Tiro Bangla', serif; font-size:26px; margin:6px 0 4px; line-height:1.35;}
+  .hero p{margin:0; opacity:.88; font-size:14.5px;}
+  .pulse-wrap{width:100%; height:46px; margin-top:14px; opacity:.9;}
+  .pulse-path{
+    fill:none; stroke:#FFD9C7; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;
+    stroke-dasharray:520; stroke-dashoffset:520;
+    animation:draw 2.6s ease-out forwards;
+  }
+  @keyframes draw{to{stroke-dashoffset:0;}}
+  @media (prefers-reduced-motion: reduce){.pulse-path{animation:none; stroke-dashoffset:0;}}
+
+  /* ---------- Content ---------- */
+  .content{flex:1; padding:18px 18px 90px;}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px; margin-bottom:16px;
+  }
+  .card h2{font-family:'Tiro Bangla', serif; font-size:19px; margin:0 0 14px; color:var(--maroon);}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px; font-weight:600;}
+  .field input, .field select{
+    width:100%; padding:12px 13px; border-radius:11px; border:1.5px solid var(--line);
+    font-family:'Hind Siliguri', sans-serif; font-size:15px; background:#FCFAF8; color:var(--ink);
+  }
+  .field input:focus, .field select:focus{outline:none; border-color:var(--crimson); background:#fff;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+
+  .btn{
+    width:100%; padding:13px; border-radius:12px; border:none; font-size:15.5px; font-weight:700;
+    font-family:'Hind Siliguri', sans-serif; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .btn-primary{background:var(--crimson); color:#fff;}
+  .btn-primary:active{background:#a91830;}
+  .btn-outline{background:transparent; color:var(--maroon); border:1.5px solid var(--maroon);}
+  .btn-ghost{background:var(--line); color:var(--ink);}
+  .btn:disabled{opacity:.55;}
+
+  .link-row{text-align:center; margin-top:14px; font-size:14px; color:var(--muted);}
+  .link-row a{color:var(--crimson); font-weight:700; text-decoration:none; cursor:pointer;}
+
+  .msg{
+    padding:11px 14px; border-radius:10px; font-size:13.5px; margin-bottom:14px; display:none;
+  }
+  .msg.error{background:#FDEAEA; color:#9C2020; display:block;}
+  .msg.success{background:#E9F5EE; color:var(--sage); display:block;}
+
+  /* Blood group grid */
+  .bg-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:14px;}
+  .bg-chip{
+    padding:10px 0; text-align:center; border-radius:10px; border:1.5px solid var(--line);
+    font-weight:700; font-size:14px; cursor:pointer; color:var(--ink); background:#FCFAF8;
+  }
+  .bg-chip.active{background:var(--crimson); border-color:var(--crimson); color:#fff;}
+
+  .loc-btn{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    padding:12px; border-radius:11px; border:1.5px dashed var(--muted); background:#FCFAF8;
+    color:var(--maroon); font-weight:700; font-size:14px; cursor:pointer; width:100%;
+  }
+  .loc-btn.done{border-style:solid; border-color:var(--sage); color:var(--sage); background:#F0FAF4;}
+
+  /* Profile */
+  .profile-head{display:flex; align-items:center; gap:14px; margin-bottom:6px;}
+  .avatar{
+    width:64px; height:64px; border-radius:50%; background:var(--line); display:flex; align-items:center; justify-content:center;
+    font-family:'Tiro Bangla', serif; font-size:24px; color:var(--maroon); overflow:hidden; flex-shrink:0; position:relative;
+    border:2px solid var(--crimson);
+  }
+  .avatar img{width:100%; height:100%; object-fit:cover;}
+  .avatar-edit{
+    position:absolute; bottom:-2px; right:-2px; width:22px; height:22px; border-radius:50%; background:var(--crimson);
+    color:#fff; font-size:11px; display:flex; align-items:center; justify-content:center; border:2px solid #fff;
+  }
+  .profile-name{font-family:'Tiro Bangla', serif; font-size:19px; margin:0;}
+  .profile-sub{font-size:13px; color:var(--muted); margin-top:2px;}
+  .bg-badge{
+    display:inline-block; background:var(--crimson); color:#fff; font-weight:700; font-size:13px;
+    padding:4px 10px; border-radius:8px; margin-top:6px;
+  }
+  .info-row{display:flex; justify-content:space-between; padding:11px 0; border-bottom:1px solid var(--line); font-size:14px;}
+  .info-row:last-child{border-bottom:none;}
+  .info-row .k{color:var(--muted);}
+  .info-row .v{font-weight:600; text-align:right;}
+
+  .toggle-row{display:flex; align-items:center; justify-content:space-between; padding:6px 2px;}
+  .toggle-row .label{font-weight:600; font-size:14.5px;}
+  .toggle-row .sub{font-size:12.5px; color:var(--muted); margin-top:2px;}
+  .switch{position:relative; width:46px; height:26px; flex-shrink:0;}
+  .switch input{opacity:0; width:0; height:0;}
+  .slider{position:absolute; inset:0; background:var(--line); border-radius:20px; cursor:pointer; transition:.2s;}
+  .slider:before{content:""; position:absolute; width:20px; height:20px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,.25);}
+  .switch input:checked + .slider{background:var(--sage);}
+  .switch input:checked + .slider:before{transform:translateX(20px);}
+
+  /* Bottom nav (placeholder for future phases) */
+  .bottomnav{
+    position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px;
+    background:#fff; border-top:1px solid var(--line); display:flex; z-index:40;
+    padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+  }
+  .nav-item{flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 2px; color:var(--muted); font-size:11px; cursor:pointer;}
+  .nav-item.active{color:var(--crimson); font-weight:700;}
+  .nav-icon{font-size:19px; line-height:1;}
+  .nav-item.disabled{opacity:.4;}
+
+  .hidden{display:none !important;}
+  .center-note{text-align:center; color:var(--muted); font-size:13px; margin-top:6px;}
+  .spinner{
+    width:16px; height:16px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%;
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .step-dots{display:flex; gap:6px; justify-content:center; margin-bottom:16px;}
+  .step-dots span{width:7px; height:7px; border-radius:50%; background:var(--line);}
+  .step-dots span.active{background:var(--crimson); width:18px; border-radius:4px;}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ===================== TOP BAR ===================== -->
+  <div class="topbar" id="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none"><path d="M12 2C12 2 5 10.5 5 15a7 7 0 0014 0c0-4.5-7-13-7-13z" fill="#FF6B6B"/></svg>
+      <span class="brand-name">রক্তসেতু</span>
+    </div>
+    <button class="icon-btn hidden" id="logoutBtn" title="লগআউট">⎋</button>
+  </div>
+
+  <!-- ===================== AUTH: LOGIN ===================== -->
+  <div id="view-login">
+    <div class="hero">
+      <h1>এক ফোঁটা রক্ত, <br>একটি জীবন বাঁচাতে পারে</h1>
+      <p>কাছাকাছি রক্তদাতা খুঁজুন অথবা জরুরি মুহূর্তে রক্তদাতা হয়ে উঠুন</p>
+      <svg class="pulse-wrap" viewBox="0 0 400 46" preserveAspectRatio="none">
+        <path class="pulse-path" d="M0,23 L110,23 L128,6 L146,40 L164,23 L182,23 L198,10 L214,36 L230,23 L400,23"/>
+      </svg>
+    </div>
+    <div class="content" style="padding-top:22px;">
+      <div class="card">
+        <h2>লগইন করুন</h2>
+        <div class="msg error" id="loginError"></div>
+        <div class="field">
+          <label>মোবাইল নম্বর বা ইমেইল</label>
+          <input type="text" id="loginId" placeholder="017XXXXXXXX অথবা ইমেইল" autocomplete="username">
+        </div>
+        <div class="field">
+          <label>পাসওয়ার্ড</label>
+          <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button class="btn btn-primary" id="loginBtn"><span id="loginBtnLabel">লগইন করুন</span></button>
+        <div class="link-row">অ্যাকাউন্ট নেই? <a id="goRegister">নতুন অ্যাকাউন্ট খুলুন</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== AUTH: REGISTER ===================== -->
+  <div id="view-register" class="hidden">
+    <div class="content" style="padding-top:20px;">
+
+      <div class="step-dots">
+        <span id="dot1" class="active"></span><span id="dot2"></span>
+      </div>
+
+      <!-- Step 1: basic info -->
+      <div class="card" id="regStep1">
+        <h2>নতুন অ্যাকাউন্ট — ধাপ ১/২</h2>
+        <div class="msg error" id="regError1"></div>
+        <div class="field">
+          <label>পুরো নাম</label>
+          <input type="text" id="regName" placeholder="যেমন: মোঃ সাইফুল ইসলাম">
+        </div>
+        <div class="field">
+          <label>মোবাইল নম্বর</label>
+          <input type="tel" id="regMobile" placeholder="01XXXXXXXXX">
+        </div>
+        <div class="field">
+          <label>ইমেইল</label>
+          <input type="email" id="regEmail" placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label>পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)</label>
+          <input type="password" id="regPass" placeholder="••••••••">
+        </div>
+        <button class="btn btn-primary" id="toStep2Btn">পরবর্তী ধাপ →</button>
+        <div class="link-row">অ্যাকাউন্ট আছে? <a id="goLogin">লগইন করুন</a></div>
+      </div>
+
+      <!-- Step 2: blood + location -->
+      <div class="card hidden" id="regStep2">
+        <h2>নতুন অ্যাকাউন্ট — ধাপ ২/২</h2>
+        <div class="msg error" id="regError2"></div>
+        <div class="field">
+          <label>রক্তের গ্রুপ</label>
+          <div class="bg-grid" id="bgGrid"></div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>জেলা</label>
+            <select id="regDistrict"></select>
+          </div>
+          <div class="field">
+            <label>উপজেলা</label>
+            <input type="text" id="regUpazila" placeholder="উপজেলার নাম">
+          </div>
+        </div>
+        <div class="field">
+          <label>বর্তমান অবস্থান</label>
+          <button type="button" class="loc-btn" id="getLocBtn">📍 লোকেশন সেট করুন</button>
+        </div>
+        <button class="btn btn-primary" id="submitRegBtn"><span id="regBtnLabel">অ্যাকাউন্ট তৈরি করুন</span></button>
+        <button class="btn btn-ghost" id="backStep1Btn" style="margin-top:10px;">← আগের ধাপ</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===================== PROFILE (after login) ===================== -->
+  <div id="view-profile" class="hidden">
+    <div class="content" style="padding-top:18px;">
+
+      <div class="card">
+        <div class="profile-head">
+          <div class="avatar" id="avatarBox">
+            <span id="avatarInitial">?</span>
+            <div class="avatar-edit" id="avatarEditBtn">✎</div>
+          </div>
+          <input type="file" id="avatarInput" accept="image/*" class="hidden">
+          <div>
+            <p class="profile-name" id="pName">—</p>
+            <p class="profile-sub" id="pLocation">—</p>
+            <span class="bg-badge" id="pBloodGroup">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="toggle-row">
+          <div>
+            <div class="label">রক্তদানের জন্য উপলব্ধ</div>
+            <div class="sub">চালু থাকলে আপনি জরুরি অনুরোধে দেখা যাবেন</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="availableToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>তথ্য</h2>
+        <div class="info-row"><span class="k">মোবাইল</span><span class="v" id="iMobile">—</span></div>
+        <div class="info-row"><span class="k">ইমেইল</span><span class="v" id="iEmail">—</span></div>
+        <div class="info-row"><span class="k">জেলা</span><span class="v" id="iDistrict">—</span></div>
+        <div class="info-row"><span class="k">উপজেলা</span><span class="v" id="iUpazila">—</span></div>
+        <div class="info-row"><span class="k">সর্বশেষ রক্তদান</span><span class="v" id="iLastDonation">তথ্য নেই</span></div>
+      </div>
+
+      <div class="msg success" id="profileMsg"></div>
+      <button class="btn btn-outline" id="editProfileBtn">প্রোফাইল সম্পাদনা করুন</button>
+    </div>
+
+    <div class="bottomnav">
+      <div class="nav-item active"><div class="nav-icon">🏠</div>প্রোফাইল</div>
+      <div class="nav-item disabled"><div class="nav-icon">🔍</div>খুঁজুন</div>
+      <div class="nav-item disabled"><div class="nav-icon">🚨</div>অনুরোধ</div>
+      <div class="nav-item disabled"><div class="nav-icon">🕘</div>ইতিহাস</div>
+    </div>
+  </div>
+
+  <!-- Full page loader -->
+  <div id="loader" class="hidden" style="position:fixed;inset:0;background:rgba(255,248,243,.9);z-index:100;display:flex;align-items:center;justify-content:center;">
+    <div style="width:34px;height:34px;border:3px solid var(--line);border-top-color:var(--crimson);border-radius:50%;animation:spin .7s linear infinite;"></div>
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* =========================================================
+   FIREBASE CONFIG
+   এখানে আপনার UandME / তরঙ্গ প্রজেক্টের একই firebaseConfig
+   বসিয়ে দিন (Firebase Console > Project Settings > SDK setup)
+========================================================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyC5X3u2zXEYMHD7TKK_UeAQinwS62ImKMA",
+  authDomain: "uandme-ba15a.firebaseapp.com",
+  databaseURL: "https://uandme-ba15a-default-rtdb.firebaseio.com",
+  projectId: "uandme-ba15a",
+  storageBucket: "uandme-ba15a.firebasestorage.app",
+  messagingSenderId: "55124383429",
+  appId: "1:55124383429:web:c765de13c51b83499c02ac",
+  measurementId: "G-40XJG5PL38"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+
+/* ---------------------- Data ---------------------- */
+const BLOOD_GROUPS = ["A+","A-","B+","B-","AB+","AB-","O+","O-"];
+const DISTRICTS = ["বাগেরহাট","বান্দরবান","বরগুনা","বরিশাল","ভোলা","বগুড়া","ব্রাহ্মণবাড়িয়া","চাঁদপুর","চট্টগ্রাম","চুয়াডাঙ্গা","কুমিল্লা","কক্সবাজার","ঢাকা","দিনাজপুর","ফরিদপুর","ফেনী","গাইবান্ধা","গাজীপুর","গোপালগঞ্জ","হবিগঞ্জ","জামালপুর","যশোর","ঝালকাঠি","ঝিনাইদহ","জয়পুরহাট","খাগড়াছড়ি","খুলনা","কিশোরগঞ্জ","কুড়িগ্রাম","কুষ্টিয়া","লক্ষ্মীপুর","লালমনিরহাট","মাদারীপুর","মাগুরা","মানিকগঞ্জ","মেহেরপুর","মৌলভীবাজার","মুন্সিগঞ্জ","ময়মনসিংহ","নওগাঁ","নড়াইল","নারায়ণগঞ্জ","নরসিংদী","নাটোর","নেত্রকোনা","নীলফামারী","নোয়াখালী","পাবনা","পঞ্চগড়","পটুয়াখালী","পিরোজপুর","রাজবাড়ী","রাজশাহী","রাঙ্গামাটি","রংপুর","সাতক্ষীরা","শরীয়তপুর","শেরপুর","সিরাজগঞ্জ","সুনামগঞ্জ","সিলেট","টাঙ্গাইল","ঠাকুরগাঁও"];
+
+let selectedBG = null;
+let regLat = null, regLng = null;
+let currentUserData = null;
+let editingProfile = false;
+
+/* ---------------------- Helpers ---------------------- */
+function show(id){document.getElementById(id).classList.remove('hidden');}
+function hide(id){document.getElementById(id).classList.add('hidden');}
+function showLoader(){show('loader');}
+function hideLoader(){hide('loader');}
+function setMsg(id, text, type){
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'msg ' + type;
+}
+function clearMsg(id){
+  const el = document.getElementById(id);
+  el.textContent=''; el.className='msg';
+}
+
+function isEmail(str){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str); }
+function isBDMobile(str){ return /^01[3-9]\d{8}$/.test(str); }
+
+/* ---------------------- Populate districts + blood group grid ---------------------- */
+function populateDistricts(){
+  const sel = document.getElementById('regDistrict');
+  sel.innerHTML = '<option value="">নির্বাচন করুন</option>' +
+    DISTRICTS.sort((a,b)=>a.localeCompare(b,'bn')).map(d=>`<option value="${d}">${d}</option>`).join('');
+}
+function populateBloodGrid(){
+  const grid = document.getElementById('bgGrid');
+  grid.innerHTML = BLOOD_GROUPS.map(bg=>`<div class="bg-chip" data-bg="${bg}">${bg}</div>`).join('');
+  grid.querySelectorAll('.bg-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      grid.querySelectorAll('.bg-chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      selectedBG = chip.dataset.bg;
+    });
+  });
+}
+populateDistricts();
+populateBloodGrid();
+
+/* ---------------------- Navigation between auth views ---------------------- */
+document.getElementById('goRegister').addEventListener('click', ()=>{
+  hide('view-login'); show('view-register');
+});
+document.getElementById('goLogin').addEventListener('click', ()=>{
+  hide('view-register'); show('view-login');
+});
+document.getElementById('backStep1Btn').addEventListener('click', ()=>{
+  hide('regStep2'); show('regStep1');
+  document.getElementById('dot2').classList.remove('active');
+  document.getElementById('dot1').classList.add('active');
+});
+
+/* ---------------------- Register: step 1 -> step 2 ---------------------- */
+document.getElementById('toStep2Btn').addEventListener('click', ()=>{
+  clearMsg('regError1');
+  const name = document.getElementById('regName').value.trim();
+  const mobile = document.getElementById('regMobile').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass = document.getElementById('regPass').value;
+
+  if(!name){ setMsg('regError1','অনুগ্রহ করে আপনার নাম লিখুন','error'); return; }
+  if(!isBDMobile(mobile)){ setMsg('regError1','সঠিক মোবাইল নম্বর দিন (যেমন: 017XXXXXXXX)','error'); return; }
+  if(!isEmail(email)){ setMsg('regError1','সঠিক ইমেইল ঠিকানা দিন','error'); return; }
+  if(pass.length < 6){ setMsg('regError1','পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে','error'); return; }
+
+  hide('regStep1'); show('regStep2');
+  document.getElementById('dot1').classList.remove('active');
+  document.getElementById('dot2').classList.add('active');
+});
+
+/* ---------------------- Get GPS location ---------------------- */
+document.getElementById('getLocBtn').addEventListener('click', ()=>{
+  const btn = document.getElementById('getLocBtn');
+  if(!navigator.geolocation){
+    setMsg('regError2','আপনার ব্রাউজার লোকেশন সাপোর্ট করে না','error');
+    return;
+  }
+  btn.textContent = '📍 লোকেশন নেওয়া হচ্ছে...';
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      regLat = pos.coords.latitude;
+      regLng = pos.coords.longitude;
+      btn.textContent = '✅ লোকেশন সেট হয়েছে';
+      btn.classList.add('done');
+    },
+    err=>{
+      btn.textContent = '📍 লোকেশন সেট করুন';
+      setMsg('regError2','লোকেশন পাওয়া যায়নি। GPS চালু আছে কিনা দেখুন।','error');
+    },
+    { enableHighAccuracy:true, timeout:10000 }
+  );
+});
+
+/* ---------------------- Register: submit ---------------------- */
+document.getElementById('submitRegBtn').addEventListener('click', async ()=>{
+  clearMsg('regError2');
+  const district = document.getElementById('regDistrict').value;
+  const upazila = document.getElementById('regUpazila').value.trim();
+
+  if(!selectedBG){ setMsg('regError2','রক্তের গ্রুপ নির্বাচন করুন','error'); return; }
+  if(!district){ setMsg('regError2','জেলা নির্বাচন করুন','error'); return; }
+  if(!upazila){ setMsg('regError2','উপজেলার নাম লিখুন','error'); return; }
+  if(regLat===null){ setMsg('regError2','অনুগ্রহ করে লোকেশন সেট করুন','error'); return; }
+
+  const name = document.getElementById('regName').value.trim();
+  const mobile = document.getElementById('regMobile').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass = document.getElementById('regPass').value;
+
+  const btnLabel = document.getElementById('regBtnLabel');
+  btnLabel.textContent = 'অপেক্ষা করুন...';
+  document.getElementById('submitRegBtn').disabled = true;
+
+  try{
+    const cred = await auth.createUserWithEmailAndPassword(email, pass);
+    const uid = cred.user.uid;
+    await db.ref('users/' + uid).set({
+      name: name,
+      mobile: mobile,
+      email: email,
+      bloodGroup: selectedBG,
+      district: district,
+      upazila: upazila,
+      location: { lat: regLat, lng: regLng },
+      available: true,
+      photoBase64: null,
+      lastDonationDate: null,
+      verified: false,
+      blocked: false,
+      role: "donor",
+      createdAt: firebase.database.ServerValue.TIMESTAMP
+    });
+    // auth state listener will load profile view
+  }catch(e){
+    let msg = 'অ্যাকাউন্ট তৈরি করা যায়নি। আবার চেষ্টা করুন।';
+    if(e.code === 'auth/email-already-in-use') msg = 'এই ইমেইল দিয়ে ইতিমধ্যে অ্যাকাউন্ট আছে';
+    if(e.code === 'auth/invalid-email') msg = 'ইমেইল ঠিকানাটি সঠিক নয়';
+    setMsg('regError2', msg, 'error');
+    btnLabel.textContent = 'অ্যাকাউন্ট তৈরি করুন';
+    document.getElementById('submitRegBtn').disabled = false;
+  }
+});
+
+/* ---------------------- Login ---------------------- */
+document.getElementById('loginBtn').addEventListener('click', async ()=>{
+  clearMsg('loginError');
+  const idVal = document.getElementById('loginId').value.trim();
+  const pass = document.getElementById('loginPass').value;
+
+  if(!idVal || !pass){ setMsg('loginError','মোবাইল/ইমেইল ও পাসওয়ার্ড দিন','error'); return; }
+
+  let email = idVal;
+  const btnLabel = document.getElementById('loginBtnLabel');
+  document.getElementById('loginBtn').disabled = true;
+
+  try{
+    if(!isEmail(idVal)){
+      // mobile দিয়ে লগইন — DB থেকে সংশ্লিষ্ট ইমেইল খুঁজে বের করা
+      btnLabel.innerHTML = '<span class="spinner"></span>';
+      const snap = await db.ref('users').orderByChild('mobile').equalTo(idVal).once('value');
+      if(!snap.exists()){
+        setMsg('loginError','এই মোবাইল নম্বর দিয়ে কোনো অ্যাকাউন্ট পাওয়া যায়নি','error');
+        btnLabel.textContent = 'লগইন করুন';
+        document.getElementById('loginBtn').disabled = false;
+        return;
+      }
+      const val = snap.val();
+      email = Object.values(val)[0].email;
+    }
+    btnLabel.innerHTML = '<span class="spinner"></span>';
+    await auth.signInWithEmailAndPassword(email, pass);
+  }catch(e){
+    let msg = 'লগইন ব্যর্থ হয়েছে। তথ্য যাচাই করে আবার চেষ্টা করুন।';
+    if(e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') msg = 'পাসওয়ার্ড সঠিক নয়';
+    if(e.code === 'auth/user-not-found') msg = 'এই তথ্য দিয়ে কোনো অ্যাকাউন্ট নেই';
+    setMsg('loginError', msg, 'error');
+    btnLabel.textContent = 'লগইন করুন';
+    document.getElementById('loginBtn').disabled = false;
+  }
+});
+
+/* ---------------------- Logout ---------------------- */
+document.getElementById('logoutBtn').addEventListener('click', ()=>{
+  auth.signOut();
+});
+
+/* ---------------------- Avatar upload (resized -> base64) ---------------------- */
+document.getElementById('avatarEditBtn').addEventListener('click', ()=>{
+  document.getElementById('avatarInput').click();
+});
+document.getElementById('avatarInput').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    const img = new Image();
+    img.onload = function(){
+      const size = 200;
+      const canvas = document.createElement('canvas');
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const scale = Math.max(size/img.width, size/img.height);
+      const w = img.width*scale, h = img.height*scale;
+      ctx.drawImage(img, (size-w)/2, (size-h)/2, w, h);
+      const base64 = canvas.toDataURL('image/jpeg', 0.75);
+      const uid = auth.currentUser.uid;
+      db.ref('users/'+uid+'/photoBase64').set(base64).then(()=>{
+        renderAvatar(base64, currentUserData.name);
+        setMsg('profileMsg','প্রোফাইল ছবি আপডেট হয়েছে','success');
+      });
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+function renderAvatar(base64, name){
+  const box = document.getElementById('avatarBox');
+  const initial = (name||'?').trim().charAt(0);
+  box.innerHTML = base64
+    ? `<img src="${base64}"><div class="avatar-edit" id="avatarEditBtn2">✎</div>`
+    : `<span id="avatarInitial">${initial}</span><div class="avatar-edit" id="avatarEditBtn2">✎</div>`;
+  document.getElementById('avatarEditBtn2').addEventListener('click', ()=>{
+    document.getElementById('avatarInput').click();
+  });
+}
+
+/* ---------------------- Availability toggle ---------------------- */
+document.getElementById('availableToggle').addEventListener('change', (e)=>{
+  const uid = auth.currentUser.uid;
+  db.ref('users/'+uid+'/available').set(e.target.checked);
+});
+
+/* ---------------------- Render profile ---------------------- */
+function renderProfile(uid, data){
+  currentUserData = data;
+  document.getElementById('pName').textContent = data.name || '—';
+  document.getElementById('pLocation').textContent = (data.upazila || '') + ', ' + (data.district || '');
+  document.getElementById('pBloodGroup').textContent = data.bloodGroup || '—';
+  document.getElementById('iMobile').textContent = data.mobile || '—';
+  document.getElementById('iEmail').textContent = data.email || '—';
+  document.getElementById('iDistrict').textContent = data.district || '—';
+  document.getElementById('iUpazila').textContent = data.upazila || '—';
+  document.getElementById('iLastDonation').textContent = data.lastDonationDate || 'তথ্য নেই';
+  document.getElementById('availableToggle').checked = !!data.available;
+  renderAvatar(data.photoBase64, data.name);
+}
+
+/* ---------------------- Auth state listener ---------------------- */
+auth.onAuthStateChanged(async (user)=>{
+  showLoader();
+  if(user){
+    show('logoutBtn');
+    const snap = await db.ref('users/'+user.uid).once('value');
+    const data = snap.val();
+    if(data){
+      renderProfile(user.uid, data);
+      hide('view-login'); hide('view-register'); show('view-profile');
+    }
+    // live updates
+    db.ref('users/'+user.uid).on('value', s=>{
+      if(s.exists()) renderProfile(user.uid, s.val());
+    });
+  } else {
+    hide('logoutBtn');
+    hide('view-profile'); hide('view-register'); show('view-login');
+    document.getElementById('loginBtnLabel').textContent = 'লগইন করুন';
+    document.getElementById('loginBtn').disabled = false;
+  }
+  hideLoader();
+});
+
+document.getElementById('editProfileBtn').addEventListener('click', ()=>{
+  setMsg('profileMsg', 'সম্পাদনা ফিচারটি পরবর্তী আপডেটে যুক্ত হবে।', 'success');
+});
+</script>
+</body>
+</html>
