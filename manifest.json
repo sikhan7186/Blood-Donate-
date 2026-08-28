@@ -1,0 +1,33 @@
+{
+  "name": "রক্তসেতু - Blood Donate",
+  "short_name": "রক্তসেতু",
+  "description": "জরুরি মুহূর্তে কাছাকাছি রক্তদাতা খুঁজুন এবং রক্তদাতা হয়ে জীবন বাঁচান",
+  "start_url": "/Blood-Donate-/index.html",
+  "scope": "/Blood-Donate-/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF8F3",
+  "theme_color": "#5C0F1E",
+  "lang": "bn",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
