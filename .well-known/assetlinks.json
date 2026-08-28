@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "bd.raktosetu.blooddonate",
+        "sha256_cert_fingerprints": ["79:7B:DA:54:2F:F3:28:56:3D:EC:6B:FC:CD:FE:88:13:26:B9:21:30:45:1A:E2:61:53:47:74:5D:CF:46:40:29"]
+      }
+    }]
