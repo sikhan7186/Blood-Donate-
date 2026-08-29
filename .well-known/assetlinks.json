@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "bd.raktosetu.app2026",
+        "sha256_cert_fingerprints": ["78:34:01:C6:BD:C3:8B:42:00:3E:48:CB:A7:79:C1:33:D2:2D:50:82:84:46:A7:DF:2E:00:6C:F9:F8:AD:61:C1"]
+      }
+    }]
